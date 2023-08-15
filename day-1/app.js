@@ -10,18 +10,27 @@ const elves = [];
 fileStream.on("line", (line) => {
     const isEmptyLine = line.trim().length === 0;
     if(isEmptyLine) {
-        if(totalCals > 0) elves.push(totalCals);       
+        if(elves.length < 3 || totalCals > elves[2]) {
+            elves.push(totalCals); 
+            elves.sort((a,b) => b - a);
+            if(elves.length > 3) elves.pop();
+        }      
         totalCals = 0;
     } else {
-        const cals = parseInt(line, 10);
-        totalCals += cals;
+        totalCals += getCalListItem(line);
     }
 });
 
 fileStream.on("close", () => {
-    if(totalCals > 0) elves.push(totalCals);
-    const highestTotal = Math.max(...elves);
-    console.log(highestTotal);
+    if(totalCals > elves[2]) {
+        elves.push(totalCals);
+        elves.sort((a,b) => b - a);
+        if(elves.length > 3) elves.pop();
+    }
+
+    const sum = elves.reduce((totalCals, individualCcals) => totalCals + individualCcals);
+    console.log(elves);
+    console.log(sum);
 });
 
 fileStream.on('error', (err) => {
@@ -36,6 +45,10 @@ function openFileStream (fileName) {
     });
 
     return rl;
+};
+
+function getCalListItem (line)  {
+    return parseInt(line, 10);
 };
 
 
