@@ -8,34 +8,60 @@ let totalScore = 0;
 for(const round of rounds) {
     const moves = round.split(" ");
     const opponentMove = moves[0];
-    const playerMove = moves[1];
+    const playerOutcome = moves[1];
 
-    const roundScore = getScore(opponentMove, playerMove);
+    const roundScore = getScore(opponentMove, playerOutcome);
 
     totalScore += roundScore;
 }
 
 console.log(totalScore);
 
-function getScore(opponentMove, playerMove) {
-    const outcomeScore = getPlayerOutcomescore(opponentMove, playerMove);
+function getScore(opponentMove, playerOutcome) {
+    const playerMove = getPlayerMove(opponentMove, playerOutcome);
+    const outcomeScore = getPlayerOutcomescore(playerOutcome);
     const moveScore = getPlayerMoveScore(playerMove);
 
     return outcomeScore + moveScore;
 }
 
-function getPlayerOutcomescore(opponentMove, playerMove) {   
-    const playerWon = (playerMove === "X" && opponentMove === "C") 
-        || (playerMove === "Y" && opponentMove === "A") 
-        || (playerMove === "Z" && opponentMove === "B");
+function getPlayerMove(opponentMove, playerOutcome) {
+    const playerWin = "Z";
+    const playerDraw = "Y";
+    let playerMove = "";
 
-    const playerDraw = (playerMove === "X" && opponentMove === "A") 
-        || (playerMove === "Y" && opponentMove === "B") 
-        || (playerMove === "Z" && opponentMove === "C");
+    const opponentMoves = ["A", "B", "C"];
+    const playerMoves = ["Rock", "Paper", "Scissors"];
+
+    const opponentIndex = opponentMoves.indexOf(opponentMove);
     
-    if(playerWon) {
+    if(playerOutcome === playerWin) {
+        let playerIndex = opponentIndex + 1;
+
+        if((playerIndex + 1) % 3 > 0) {
+            playerIndex = (playerIndex + 1) % 3 - 1;
+        }
+
+        playerMove = playerMoves[playerIndex];
+    } else if (playerOutcome === playerDraw) {      
+        playerMove = playerMoves[opponentIndex];
+    } else {
+        let playerIndex = opponentIndex + 2;
+
+        if((playerIndex + 1) % 3 > 0) {
+            playerIndex = (playerIndex + 1) % 3 - 1;
+        }
+
+        playerMove = playerMoves[playerIndex];        
+    }
+
+    return playerMove;
+}
+
+function getPlayerOutcomescore(playerOutcome) {   
+    if(playerOutcome === "Z") {
         return 6;
-    } else if (playerDraw) {
+    } else if (playerOutcome === "Y") {
         return 3;
     } else {
         return 0;
@@ -43,14 +69,14 @@ function getPlayerOutcomescore(opponentMove, playerMove) {
 }
 
 function getPlayerMoveScore(move) {
-    if(move === "X") {
+    if(move === "Rock") {
         return 1;
-    } else if (move === "Y") {
+    } else if (move === "Paper") {
         return 2;
-    } else if (move === "Z") {
+    } else if (move === "Scissors") {
         return 3;
     } else {
-        throw new Error('Invalid player move');
+        console.log('Invalid player move');
     }
 }
 
